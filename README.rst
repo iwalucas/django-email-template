@@ -24,3 +24,15 @@ Quick start
     path('summernote/', include('django_summernote.urls')),
 
 You should see it under admin
+
+How to use it
+-------------
+Create a new template on admin called default, setting the required info. Use "object" as the context to access the variables (like on a view).
+
+
+And send it from any code::
+
+    EmailTemplate.send('default', {
+        'object': your_model_instance,
+    })
+    
