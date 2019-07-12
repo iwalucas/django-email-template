@@ -10,3 +10,7 @@ Quick start
         ...
         'django-email-template',
     ]
+
+2. Run `python manage.py migrate` to create the polls models.
+
+You should see it under admin
