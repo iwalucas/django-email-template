@@ -19,7 +19,7 @@ Quick start
 
 2. Run `python manage.py migrate` to create the polls models.
 
-3. add url for summernote:
+3. add url for summernote::
 
     path('summernote/', include('django_summernote.urls')),
 
