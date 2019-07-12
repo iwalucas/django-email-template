@@ -9,3 +9,4 @@ dist
 _build
 _static
 *.DS_Store
+reminder.txt
