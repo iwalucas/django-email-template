@@ -8,11 +8,11 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='django-email-template',
-    version='0.1',
+    name='django-proemail-template',
+    version='0.1.2',
     packages=find_packages(),
     include_package_data=True,
-    license='MIT License',  
+    license='MIT License',
     description='A simple Django app to send emails',
     long_description=README,
     url='https://github.com/iwalucas/django-email-template/',
@@ -21,9 +21,9 @@ setup(
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 2.2',  
+        'Framework :: Django :: 2.2',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',  
+        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.5',
