@@ -5,7 +5,7 @@ Quick start
 -----------
 
 0. Add it to your Environment using:
-`pip install django-proemail-template django-summernote`
+    pip install django-proemail-template django-summernote
 
 
 1. Add "django-email-template" to your INSTALLED_APPS setting like this::
@@ -19,7 +19,6 @@ Quick start
 2. Run `python manage.py migrate` to create the polls models.
 
 3. add url for summernote:
-
-`    path('summernote/', include('django_summernote.urls')),`
+    path('summernote/', include('django_summernote.urls')),
 
 You should see it under admin
