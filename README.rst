@@ -4,7 +4,7 @@ and decided to make it into a lib after using it on one of my projects
 Quick start
 -----------
 
-0. Add it to your Environment using:
+0. Add it to your Environment using::
 
     pip install django-proemail-template django-summernote
 
