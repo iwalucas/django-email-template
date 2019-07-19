@@ -23,13 +23,11 @@ class EmailTemplate(models.Model):
     """
     template_key = models.CharField(_('Key'),max_length=255, unique=True)
 
-    subject = models.CharField(_('Subject'),max_length=255, blank=True, null=True)
+    subject = models.CharField(_('Subject'),max_length=255)
     to_email = models.CharField(_('To'),max_length=255, blank=True, null=True)
     from_email = models.CharField(_('From'),max_length=255, blank=True, null=True)
     html_template = models.TextField(_('HTML'),blank=True, null=True)
-    plain_text = models.TextField(_('Plain'),blank=True, null=True)
     is_html = models.BooleanField(_('Is HTML?'),default=False)
-    is_text = models.BooleanField(_('Is Text?'),default=False)
 
     # unique identifier of the email template
 
