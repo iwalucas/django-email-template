@@ -64,7 +64,7 @@ class EmailTemplate(models.Model):
         sender = sender or mail_template.get_sender()
         emails = mail_template.get_recipient(emails, context)
 
-        if mail_template.is_text:
+        if not mail_template.is_html:
             return send_mail(subject, body, sender, emails, fail_silently=not
             settings.DEBUG)
 
@@ -78,7 +78,7 @@ class EmailTemplate(models.Model):
         return msg.send(fail_silently=not settings.DEBUG)
 
     def _get_body(self):
-        if self.is_text:
+        if not self.is_html:
             return self.plain_text
 
         return self.html_template
