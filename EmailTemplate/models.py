@@ -78,8 +78,6 @@ class EmailTemplate(models.Model):
         return msg.send(fail_silently=not settings.DEBUG)
 
     def _get_body(self):
-        if not self.is_html:
-            return self.plain_text
 
         return self.html_template
 
