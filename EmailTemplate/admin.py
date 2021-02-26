@@ -1,5 +1,5 @@
 from django.contrib import admin
-from EmailTemplate.models import EmailTemplate
+from .models import EmailTemplate
 from django_summernote.admin import SummernoteModelAdminMixin
 
 

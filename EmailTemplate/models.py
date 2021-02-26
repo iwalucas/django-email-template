@@ -24,7 +24,7 @@ class EmailTemplate(models.Model):
     template_key = models.CharField(_('Key'),max_length=255, unique=True)
 
     subject = models.CharField(_('Subject'),max_length=255)
-    to_email = models.CharField(_('To'),max_length=255, blank=True, null=True)
+    to_email = models.CharField(_('To'),max_length=1000, blank=True, null=True)
     from_email = models.CharField(_('From'),max_length=255, blank=True, null=True)
     html_template = models.TextField(_('HTML'),blank=True, null=True)
     is_html = models.BooleanField(_('Is HTML?'),default=False)
@@ -47,7 +47,12 @@ class EmailTemplate(models.Model):
         return self.from_email or settings.DEFAULT_FROM_EMAIL
 
     def get_recipient(self, emails, context):
-        return emails or [self.get_rendered_template(self.to_email, context)]
+        if emails:
+            return emails
+        else:
+            emails = self.get_rendered_template(self.to_email, context)
+            emails = emails.split(';')
+        return emails  
 
     @staticmethod
     def send(*args, **kwargs):
