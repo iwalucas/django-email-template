@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db import models
 from django.template import Context
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class EmailTemplate(models.Model):
@@ -28,6 +28,8 @@ class EmailTemplate(models.Model):
     from_email = models.CharField(_('From'),max_length=255, blank=True, null=True)
     html_template = models.TextField(_('HTML'),blank=True, null=True)
     is_html = models.BooleanField(_('Is HTML?'),default=False)
+    cc = models.CharField(_('CC'),max_length=1000, blank=True, null=True)
+    bcc = models.CharField(_('BCC'),max_length=1000, blank=True, null=True)
 
     # unique identifier of the email template
 
