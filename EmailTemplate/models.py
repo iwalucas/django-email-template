@@ -14,11 +14,11 @@ class EmailTemplate(models.Model):
     EmailTemplate.send('expense_notification_to_admin', {
     # context object that email template will be rendered with
     'expense': expense_request,
-})
+    })
 
-  EmailTemplate.send('email_key', {
-    'object':context 
-},emails=('recipient@gmail.com',))
+    EmailTemplate.send('email_key', {
+        'object':context 
+    },emails=('recipient@gmail.com',))
 
     """
     template_key = models.CharField(_('Key'),max_length=255, unique=True)
