@@ -13,6 +13,6 @@ admin.site.register(EmailTemplate,EmailTemplateAdmin)
 
 class EmailLogAdmin(admin.ModelAdmin):
     list_display = ['email_template', 'subject', 'from_email', 'to_email', 'sent_status', 'sent_datetime',]
-    readonly_fields = ['email_template', 'subject', 'from_email', 'to_email', 'sent_status', 'sent_datetime','error_message']
+    readonly_fields = ['email_template', 'subject', 'from_email', 'to_email', 'sent_status', 'sent_at','error_message']
 
 admin.site.register(EmailLog,EmailLogAdmin)
