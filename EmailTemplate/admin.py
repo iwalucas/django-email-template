@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import EmailTemplate
+from .models import EmailTemplate, EmailLog
 from django_summernote.admin import SummernoteModelAdminMixin
 
 
@@ -10,3 +10,9 @@ class EmailTemplateAdmin(SummernoteModelAdminMixin,admin.ModelAdmin):
 
 
 admin.site.register(EmailTemplate,EmailTemplateAdmin)
+
+class EmailLogAdmin(admin.ModelAdmin):
+    list_display = ['email_template', 'subject', 'from_email', 'to_email', 'sent_status', 'sent_datetime',]
+    readonly_fields = ['email_template', 'subject', 'from_email', 'to_email', 'sent_status', 'sent_datetime','error_message']
+
+admin.site.register(EmailLog,EmailLogAdmin)

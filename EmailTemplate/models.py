@@ -71,18 +71,51 @@ class EmailTemplate(models.Model):
         sender = sender or mail_template.get_sender()
         emails = mail_template.get_recipient(emails, context)
 
-        if not mail_template.is_html:
-            return send_mail(subject, body, sender, emails, fail_silently=not
-            settings.DEBUG)
+        email_log = EmailLog.objects.create(
+            email_template=mail_template,
+            subject=subject,
+            body=body,
+            from_email=sender,
+            to_email=','.join(emails),
+            cc=mail_template.cc,
+            bcc=mail_template.bcc,
+        )
 
-        msg = EmailMultiAlternatives(subject, body, sender, emails,
-                                     alternatives=((body, 'text/html'),),
-                                     bcc=bcc
-                                     )
-        if attachments:
-            for name, content, mimetype in attachments:
-                msg.attach(name, content, mimetype)
-        return msg.send(fail_silently=not settings.DEBUG)
+        # if not mail_template.is_html:
+        #     return send_mail(subject, body, sender, emails, fail_silently=not
+        #     settings.DEBUG)
+
+        # msg = EmailMultiAlternatives(subject, body, sender, emails,
+        #                              alternatives=((body, 'text/html'),),
+        #                              bcc=bcc
+        #                              )
+        # if attachments:
+        #     for name, content, mimetype in attachments:
+        #         msg.attach(name, content, mimetype)
+        # return msg.send(fail_silently=not settings.DEBUG)
+        try:
+            if not mail_template.is_html:
+                send_mail(subject, body, sender, emails, fail_silently=False)
+            else:
+                msg = EmailMultiAlternatives(subject, body, sender, emails,
+                                             alternatives=((body, 'text/html'),),
+                                             bcc=bcc
+                                             )
+                if attachments:
+                    for name, content, mimetype in attachments:
+                        msg.attach(name, content, mimetype)
+                msg.send(fail_silently=False)
+
+            email_log.sent_status = True
+            email_log.save()
+
+        except Exception as e:
+            # Log exception
+            print(str(e))
+            email_log.error_message = str(e)
+            email_log.save()
+
+        return email_log.sent_status
 
     def _get_body(self):
 
@@ -90,3 +123,22 @@ class EmailTemplate(models.Model):
 
     def __str__(self):
         return "<{}> {}".format(self.template_key, self.subject)
+
+
+class EmailLog(models.Model):
+    """
+    The EmailLog model is designed to store each sent email's data for logging purposes.
+    """
+    email_template = models.ForeignKey(EmailTemplate, on_delete=models.CASCADE)
+    subject = models.CharField(_('Subject'), max_length=255)
+    body = models.TextField(_('Body'))
+    from_email = models.CharField(_('From'), max_length=255)
+    to_email = models.CharField(_('To'), max_length=1000)
+    cc = models.CharField(_('CC'), max_length=1000, blank=True, null=True)
+    bcc = models.CharField(_('BCC'), max_length=1000, blank=True, null=True)
+    sent_at = models.DateTimeField(_('Sent At'), auto_now_add=True)
+    sent_status = models.BooleanField(_('Sent status'), default=False)
+    error_message = models.TextField(_('Error message'), blank=True, null=True)
+
+    def __str__(self):
+        return f'Subject: {self.subject}, From: {self.from_email}, To: {self.to_email}, Sent at: {self.sent_at}'
