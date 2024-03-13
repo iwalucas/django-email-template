@@ -10,26 +10,27 @@ class EmailTemplate(models.Model):
     """
     Email templates get stored in database so that admins can
     change emails on the fly
-    
+
     EmailTemplate.send('expense_notification_to_admin', {
     # context object that email template will be rendered with
     'expense': expense_request,
     })
 
     EmailTemplate.send('email_key', {
-        'object':context 
+        'object':context
     },emails=('recipient@gmail.com',))
 
     """
-    template_key = models.CharField(_('Key'),max_length=255, unique=True)
 
-    subject = models.CharField(_('Subject'),max_length=255)
-    to_email = models.CharField(_('To'),max_length=1000, blank=True, null=True)
-    from_email = models.CharField(_('From'),max_length=255, blank=True, null=True)
-    html_template = models.TextField(_('HTML'),blank=True, null=True)
-    is_html = models.BooleanField(_('Is HTML?'),default=False)
-    cc = models.CharField(_('CC'),max_length=1000, blank=True, null=True)
-    bcc = models.CharField(_('BCC'),max_length=1000, blank=True, null=True)
+    template_key = models.CharField(_("Key"), max_length=255, unique=True)
+
+    subject = models.CharField(_("Subject"), max_length=255)
+    to_email = models.CharField(_("To"), max_length=1000, blank=True, null=True)
+    from_email = models.CharField(_("From"), max_length=255, blank=True, null=True)
+    html_template = models.TextField(_("HTML"), blank=True, null=True)
+    is_html = models.BooleanField(_("Is HTML?"), default=False)
+    cc = models.CharField(_("CC"), max_length=1000, blank=True, null=True)
+    bcc = models.CharField(_("BCC"), max_length=1000, blank=True, null=True)
 
     # unique identifier of the email template
 
@@ -48,21 +49,30 @@ class EmailTemplate(models.Model):
     def get_sender(self):
         return self.from_email or settings.DEFAULT_FROM_EMAIL
 
-    def get_recipient(self, emails, context):
+    def get_recipient(self, emails, context) -> list:
         if emails:
             return emails
         else:
             emails = self.get_rendered_template(self.to_email, context)
-            emails = emails.split(';')
-        return emails  
+            emails = emails.split(";") if ";" in emails else emails.split(",")
+        return emails
 
     @staticmethod
     def send(*args, **kwargs):
         EmailTemplate._send(*args, **kwargs)
 
     @staticmethod
-    def _send(template_key, context, subject=None, body=None, sender=None,
-              emails=None, bcc=None, attachments=None):
+    def _send(
+        template_key,
+        context,
+        subject=None,
+        body=None,
+        sender=None,
+        emails=None,
+        cc=None,
+        bcc=None,
+        attachments=None,
+    ):
         mail_template = EmailTemplate.objects.get(template_key=template_key)
         context = Context(context)
 
@@ -76,31 +86,24 @@ class EmailTemplate(models.Model):
             subject=subject,
             body=body,
             from_email=sender,
-            to_email=','.join(emails),
-            cc=mail_template.cc,
-            bcc=mail_template.bcc,
+            to_email=",".join(emails),
+            cc=cc,
+            bcc=bcc,
         )
 
-        # if not mail_template.is_html:
-        #     return send_mail(subject, body, sender, emails, fail_silently=not
-        #     settings.DEBUG)
-
-        # msg = EmailMultiAlternatives(subject, body, sender, emails,
-        #                              alternatives=((body, 'text/html'),),
-        #                              bcc=bcc
-        #                              )
-        # if attachments:
-        #     for name, content, mimetype in attachments:
-        #         msg.attach(name, content, mimetype)
-        # return msg.send(fail_silently=not settings.DEBUG)
         try:
             if not mail_template.is_html:
                 send_mail(subject, body, sender, emails, fail_silently=False)
             else:
-                msg = EmailMultiAlternatives(subject, body, sender, emails,
-                                             alternatives=((body, 'text/html'),),
-                                             bcc=bcc
-                                             )
+                msg = EmailMultiAlternatives(
+                    subject,
+                    body,
+                    sender,
+                    emails,
+                    alternatives=((body, "text/html"),),
+                    bcc=bcc,
+                    cc=cc,
+                )
                 if attachments:
                     for name, content, mimetype in attachments:
                         msg.attach(name, content, mimetype)
@@ -129,16 +132,17 @@ class EmailLog(models.Model):
     """
     The EmailLog model is designed to store each sent email's data for logging purposes.
     """
+
     email_template = models.ForeignKey(EmailTemplate, on_delete=models.CASCADE)
-    subject = models.CharField(_('Subject'), max_length=255)
-    body = models.TextField(_('Body'))
-    from_email = models.CharField(_('From'), max_length=255)
-    to_email = models.CharField(_('To'), max_length=1000)
-    cc = models.CharField(_('CC'), max_length=1000, blank=True, null=True)
-    bcc = models.CharField(_('BCC'), max_length=1000, blank=True, null=True)
-    sent_at = models.DateTimeField(_('Sent At'), auto_now_add=True)
-    sent_status = models.BooleanField(_('Sent status'), default=False)
-    error_message = models.TextField(_('Error message'), blank=True, null=True)
+    subject = models.CharField(_("Subject"), max_length=255)
+    body = models.TextField(_("Body"))
+    from_email = models.CharField(_("From"), max_length=255)
+    to_email = models.CharField(_("To"), max_length=1000)
+    cc = models.CharField(_("CC"), max_length=1000, blank=True, null=True)
+    bcc = models.CharField(_("BCC"), max_length=1000, blank=True, null=True)
+    sent_at = models.DateTimeField(_("Sent At"), auto_now_add=True)
+    sent_status = models.BooleanField(_("Sent status"), default=False)
+    error_message = models.TextField(_("Error message"), blank=True, null=True)
 
     def __str__(self):
-        return f'Subject: {self.subject}, From: {self.from_email}, To: {self.to_email}, Sent at: {self.sent_at}'
+        return f"Subject: {self.subject}, From: {self.from_email}, To: {self.to_email}, Sent at: {self.sent_at}"
